@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Manifest Office Add-in pour Tentra.
+  Format : Office Add-in Manifest XML legacy (= compatible Outlook
+  Classic + Outlook on the Web + nouvelles versions). VersionOverrides
+  V1.1 pour exposer un bouton ribbon « Envoyer vers Tentra » sur la
+  surface de lecture des emails.
+
+  AVANT DE SIDELOADER :
+  1. Remplace toutes les occurrences de `https://avgedev.github.io/tentra/` par
+     l'URL HTTPS où tu héberges les fichiers de l'add-in (= GitHub
+     Pages typiquement, ex: https://guillaume-avelange.github.io/
+     tentra-outlook-addin/).
+  2. Remplace `<Id>` par un GUID unique (= générable via
+     https://guidgenerator.com ou la commande `[guid]::NewGuid()`
+     en PowerShell). Garder le même GUID entre les versions du
+     manifest pour qu'Outlook reconnaisse les mises à jour.
+
+  RÉSEAU :
+  AppDomain inclut http://localhost:5180 (= serveur Vite Tentra).
+  Les browsers modernes (Edge WebView2 utilisé par Outlook Classic)
+  considèrent localhost comme trusted, donc les fetch HTTPS → HTTP
+  localhost sont autorisés. Si tu rencontres des erreurs « mixed
+  content blocked », il faudra activer HTTPS sur Vite.
+-->
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides"
+           xsi:type="MailApp">
+
+  <!-- GUID unique de l'add-in. À REMPLACER par ton propre GUID. -->
+  <Id>2770c6d9-a5d3-4ff3-8b3b-3cb1557ec6e7</Id>
+  <Version>1.0.0</Version>
+  <ProviderName>Tentra</ProviderName>
+  <DefaultLocale>fr-FR</DefaultLocale>
+  <DisplayName DefaultValue="Envoyer vers Tentra"/>
+  <Description DefaultValue="Importe l'email courant comme tâche dans Tentra (outil de suivi personnel)."/>
+  <IconUrl DefaultValue="https://avgedev.github.io/tentra/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://avgedev.github.io/tentra/assets/icon-128.png"/>
+  <SupportUrl DefaultValue="https://avgedev.github.io/tentra/"/>
+
+  <!-- Domaines autorisés pour les requêtes sortantes du taskpane. -->
+  <AppDomains>
+    <AppDomain>http://localhost:5180</AppDomain>
+    <AppDomain>https://localhost:5180</AppDomain>
+  </AppDomains>
+
+  <Hosts>
+    <Host Name="Mailbox"/>
+  </Hosts>
+  <Requirements>
+    <Sets>
+      <Set Name="Mailbox" MinVersion="1.5"/>
+    </Sets>
+  </Requirements>
+  <FormSettings>
+    <Form xsi:type="ItemRead">
+      <DesktopSettings>
+        <SourceLocation DefaultValue="https://avgedev.github.io/tentra/src/taskpane.html"/>
+        <RequestedHeight>200</RequestedHeight>
+      </DesktopSettings>
+    </Form>
+  </FormSettings>
+  <Permissions>ReadWriteItem</Permissions>
+  <Rule xsi:type="RuleCollection" Mode="Or">
+    <Rule xsi:type="ItemIs" ItemType="Message" FormType="Read"/>
+  </Rule>
+  <DisableEntityHighlighting>false</DisableEntityHighlighting>
+
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides/1.1" xsi:type="VersionOverridesV1_1">
+      <Requirements>
+        <bt:Sets DefaultMinVersion="1.5">
+          <bt:Set Name="Mailbox"/>
+        </bt:Sets>
+      </Requirements>
+
+      <Hosts>
+        <Host xsi:type="MailHost">
+          <DesktopFormFactor>
+            <ExtensionPoint xsi:type="MessageReadCommandSurface">
+              <OfficeTab id="TabDefault">
+                <Group id="msgReadGroup">
+                  <Label resid="groupLabel"/>
+                  <Control xsi:type="Button" id="msgReadButton">
+                    <Label resid="buttonLabel"/>
+                    <Supertip>
+                      <Title resid="buttonTitle"/>
+                      <Description resid="buttonDescription"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="icon16"/>
+                      <bt:Image size="32" resid="icon32"/>
+                      <bt:Image size="80" resid="icon80"/>
+                    </Icon>
+                    <!-- ShowTaskpane : ouvre le taskpane qui exécute
+                         la logique. On préfère ça à ExecuteFunction
+                         pour avoir un retour visuel (= « envoyé ! »
+                         ou message d'erreur). -->
+                    <Action xsi:type="ShowTaskpane">
+                      <SourceLocation resid="taskpaneUrl"/>
+                    </Action>
+                  </Control>
+                </Group>
+              </OfficeTab>
+            </ExtensionPoint>
+          </DesktopFormFactor>
+        </Host>
+      </Hosts>
+
+      <Resources>
+        <bt:Images>
+          <bt:Image id="icon16" DefaultValue="https://avgedev.github.io/tentra/assets/icon-16.png"/>
+          <bt:Image id="icon32" DefaultValue="https://avgedev.github.io/tentra/assets/icon-32.png"/>
+          <bt:Image id="icon80" DefaultValue="https://avgedev.github.io/tentra/assets/icon-80.png"/>
+        </bt:Images>
+        <bt:Urls>
+          <bt:Url id="taskpaneUrl" DefaultValue="https://avgedev.github.io/tentra/src/taskpane.html"/>
+        </bt:Urls>
+        <bt:ShortStrings>
+          <bt:String id="groupLabel" DefaultValue="Tentra"/>
+          <bt:String id="buttonLabel" DefaultValue="Envoyer vers Tentra"/>
+          <bt:String id="buttonTitle" DefaultValue="Envoyer vers Tentra"/>
+        </bt:ShortStrings>
+        <bt:LongStrings>
+          <bt:String id="buttonDescription" DefaultValue="Crée une tâche Tentra à partir de cet email (sujet, expéditeur, corps, pièces jointes)."/>
+        </bt:LongStrings>
+      </Resources>
+    </VersionOverrides>
+  </VersionOverrides>
+</OfficeApp>

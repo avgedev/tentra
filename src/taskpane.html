@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Envoyer vers Tentra</title>
+
+  <!-- Office.js : fourni par Microsoft via CDN. C'est le runtime
+       qui expose Office.context.mailbox.* etc. -->
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main id="app" class="container">
+    <header class="header">
+      <h1>Envoyer vers Tentra</h1>
+    </header>
+
+    <section id="status" class="status status-info" aria-live="polite">
+      <span class="spinner" aria-hidden="true"></span>
+      <span class="status-text">Initialisation…</span>
+    </section>
+
+    <section id="details" class="details" hidden>
+      <div class="row">
+        <span class="label">Sujet</span>
+        <span class="value" id="detail-subject">—</span>
+      </div>
+      <div class="row">
+        <span class="label">De</span>
+        <span class="value" id="detail-from">—</span>
+      </div>
+      <div class="row">
+        <span class="label">Pièces jointes</span>
+        <span class="value" id="detail-attachments">—</span>
+      </div>
+    </section>
+
+    <section class="actions">
+      <button id="send-btn" type="button" class="primary" disabled>
+        Envoyer vers Tentra
+      </button>
+      <button id="close-btn" type="button" class="secondary" hidden>
+        Fermer
+      </button>
+    </section>
+
+    <footer class="footer">
+      <small id="footer-help">
+        Tentra doit être ouvert sur <code>localhost:5180</code> pour
+        recevoir l'email.
+      </small>
+    </footer>
+  </main>
+
+  <script src="./taskpane.js"></script>
+</body>
+</html>
